@@ -1,0 +1,5 @@
+google:
+  cloud:
+    storage:
+      project-id: learn-cloud-storage-338709
+      bucket-name: message-content
