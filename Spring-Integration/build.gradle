@@ -1,0 +1,27 @@
+plugins {
+	id 'org.springframework.boot' version '2.6.3'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+}
+
+group = 'com.tech.spring'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-integration'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.integration:spring-integration-http'
+	implementation 'org.springframework.integration:spring-integration-mail'
+	implementation 'org.apache.commons:commons-email:1.5'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.integration:spring-integration-test'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
