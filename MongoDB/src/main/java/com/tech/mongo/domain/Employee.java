@@ -23,6 +23,10 @@ public class Employee {
   private String lastName;
   private String email;
   private LocalDate birthDate;
+  private Integer salary;
+  private Double performanceRating;
+  private boolean isActive;
+
   @LastModifiedBy
   private String lastModifiedBy;
   @LastModifiedDate
@@ -82,5 +86,29 @@ public class Employee {
 
   public void setLastModified(LocalDateTime lastModified) {
     this.lastModified = lastModified;
+  }
+
+  public Integer getSalary() {
+    return salary;
+  }
+
+  public void setSalary(Integer salary) {
+    this.salary = salary;
+  }
+
+  public Double getPerformanceRating() {
+    return performanceRating;
+  }
+
+  public void setPerformanceRating(Double performanceRating) {
+    this.performanceRating = performanceRating;
+  }
+
+  public boolean isActive() {
+    return isActive;
+  }
+
+  public void setActive(boolean isActive) {
+    this.isActive = isActive;
   }
 }

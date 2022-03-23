@@ -93,6 +93,21 @@ public class MongoApplication {
       case STRING:
         value = bsonValue.asString().getValue();
         break;
+      case BOOLEAN:
+        value = bsonValue.asBoolean().getValue();
+        break;
+      case INT32:
+        value = bsonValue.asInt32().getValue();
+        break;
+      case INT64:
+        value = bsonValue.asInt64().getValue();
+        break;
+      case DECIMAL128:
+        value = bsonValue.asDecimal128().getValue();
+        break;
+      case DOUBLE:
+        value = bsonValue.asDouble().getValue();
+        break;
       default:
         value = bsonValue;
     }
