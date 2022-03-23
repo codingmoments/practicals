@@ -1,11 +1,13 @@
 package com.tech.mongo.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.bson.BsonType;
 import org.bson.codecs.pojo.annotations.BsonRepresentation;
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
@@ -21,6 +23,10 @@ public class Employee {
   private String lastName;
   private String email;
   private LocalDate birthDate;
+  @LastModifiedBy
+  private String lastModifiedBy;
+  @LastModifiedDate
+  private LocalDateTime lastModified;
 
   public String getFirstName() {
     return firstName;
@@ -60,5 +66,21 @@ public class Employee {
 
   public void setId(String id) {
     this.id = id;
+  }
+
+  public String getLastModifiedBy() {
+    return lastModifiedBy;
+  }
+
+  public void setLastModifiedBy(String lastModifiedBy) {
+    this.lastModifiedBy = lastModifiedBy;
+  }
+
+  public LocalDateTime getLastModified() {
+    return lastModified;
+  }
+
+  public void setLastModified(LocalDateTime lastModified) {
+    this.lastModified = lastModified;
   }
 }
