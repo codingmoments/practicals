@@ -3,5 +3,10 @@ spring:
     mongodb:
       url: mongodb://127.0.0.1:27017?replicaSet=rs0
       database: tech_db
+  redis:
+    database: 0
+    host: localhost
+    port: 6379
+    timeout: 60000
 server:
-  port: 8000
+  port: 8001

@@ -2,6 +2,7 @@ package com.tech.mongo;
 
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
@@ -16,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.ChangeStreamIterable;
@@ -34,6 +37,9 @@ public class MongoApplication {
 
   @Autowired
   private MongoClient mongoClient;
+
+  @Autowired
+  private RedisTemplate<Object, Object> redisTemplate;
 
   public static void main(String[] args) {
     SpringApplication.run(MongoApplication.class, args);
@@ -62,6 +68,21 @@ public class MongoApplication {
   }
 
   private void processChangeEvent(ChangeStreamDocument<Employee> e) {
+    Object key = e.getResumeToken().asDocument().get("_data").asString().getValue();
+
+    if (redisTemplate.hasKey(key)) {
+      LOGGER.info("Event is already being processed by other instance.");
+      return;
+    }
+
+    ValueOperations<Object, Object> valueOps = redisTemplate.opsForValue();
+    Boolean isKeySet = valueOps.setIfAbsent(key, "locked", 1, TimeUnit.MINUTES);
+
+    if (isKeySet == null || !isKeySet) {
+      LOGGER.info("Event is already being processed by other instance.");
+      return;
+    }
+
     ObjectId objectId = e.getDocumentKey().get("_id").asObjectId().getValue();
 
     if (e.getOperationType() == OperationType.INSERT) {
