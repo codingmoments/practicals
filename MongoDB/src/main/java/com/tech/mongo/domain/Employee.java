@@ -10,10 +10,13 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.tech.mongo.audit.Auditable;
+
 /**
  * Domain class for employees
  */
 @Document("employees")
+@Auditable(collectionName = "employees")
 public class Employee {
 
   @Id
