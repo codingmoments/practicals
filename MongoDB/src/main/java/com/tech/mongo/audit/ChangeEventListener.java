@@ -1,11 +1,14 @@
 package com.tech.mongo.audit;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
+import org.bson.conversions.Bson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +22,10 @@ import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.stereotype.Component;
 
 import com.mongodb.MongoClientSettings;
-import com.mongodb.client.ChangeStreamIterable;
 import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Aggregates;
+import com.mongodb.client.model.Filters;
 
 /**
  * Class that listens to MongoDB ChangeStream
@@ -52,9 +55,18 @@ public class ChangeEventListener implements ApplicationListener<ApplicationReady
           public void run() {
             CodecRegistry pojoCodecRegistry = CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build());
             CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), pojoCodecRegistry);
-
             MongoDatabase db = mongoClient.getDatabase("tech_db").withCodecRegistry(codecRegistry);
 
+            List<Bson> filters =
+              auditables.stream().map(auditable -> auditable.getAnnotation(Auditable.class).collectionName()).distinct().map(coll -> Filters.eq("ns.coll", coll)).collect(Collectors.toList());
+            List<Bson> pipeline = Collections.singletonList(Aggregates.match(Filters.or(filters)));
+
+            db.watch(pipeline).cursor().forEachRemaining(e -> {
+              simpleChangeEventProcessor.processChangeEvent(e);
+            });
+
+            //@formatter:off
+            /*
             for (Class<?> auditable : auditables) {
               Auditable auditableAnnotation = auditable.getAnnotation(Auditable.class);
               MongoCollection<?> mongoCollection = db.getCollection(auditableAnnotation.collectionName(), auditable);
@@ -64,6 +76,8 @@ public class ChangeEventListener implements ApplicationListener<ApplicationReady
                 simpleChangeEventProcessor.processChangeEvent(e);
               });
             }
+            */
+            //@formatter:on
           }
         };
         new Thread(thread).start();

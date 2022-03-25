@@ -42,30 +42,31 @@ public class SimpleChangeEventProcessor {
       LOGGER.info("Event is already being processed by other instance.");
       return;
     }
-
+    
     ObjectId objectId = e.getDocumentKey().get("_id").asObjectId().getValue();
+    String collectionName = e.getNamespace().getCollectionName();
 
     if (e.getOperationType() == OperationType.INSERT) {
-      LOGGER.info("A new document with Id {} has been created", objectId);
+      LOGGER.info("A new document with Id {} has been created in the collection {}", objectId, collectionName);
     }
     else if (e.getOperationType() == OperationType.UPDATE) {
-      LOGGER.info("An existing document with Id {} has been updated", objectId);
+      LOGGER.info("An existing document with Id {} has been updated in the collection {}", objectId, collectionName);
       e.getUpdateDescription().getUpdatedFields().forEach((field, value) -> {
-        logUpdatedField(field, value);
+        logUpdatedField(field, value, collectionName);
       });
     }
     else if (e.getOperationType() == OperationType.REPLACE) {
-      LOGGER.info("An existing document with Id {} has been replaced", objectId);
+      LOGGER.info("An existing document with Id {} has been replaced in the collection {}", objectId, collectionName);
     }
     else if (e.getOperationType() == OperationType.DELETE) {
-      LOGGER.info("An existing document with Id {} has been deleted", objectId);
+      LOGGER.info("An existing document with Id {} has been deleted in the collection {}", objectId, collectionName);
     }
     else {
       LOGGER.warn("Unknown operation - " + e.getOperationType());
     }
   }
 
-  private void logUpdatedField(String field, BsonValue bsonValue) {
+  private void logUpdatedField(String field, BsonValue bsonValue, String collectionName) {
     Object value = new Object();
     switch (bsonValue.getBsonType()) {
       case DATE_TIME:
@@ -92,6 +93,6 @@ public class SimpleChangeEventProcessor {
       default:
         value = bsonValue;
     }
-    LOGGER.info("Field {} is updated with new value of {}", field, value);
+    LOGGER.info("Field {} is updated with new value of {} in the collection {}", field, value, collectionName);
   }
 }
