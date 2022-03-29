@@ -21,12 +21,13 @@ import com.mongodb.client.model.changestream.OperationType;
  *
  */
 @Component
-public class SimpleChangeEventProcessor {
+public class SimpleChangeEventProcessor implements ChangeEventProcessor {
   private static final Logger LOGGER = LoggerFactory.getLogger(SimpleChangeEventProcessor.class);
 
   @Autowired
   private RedisTemplate<Object, Object> redisTemplate;
 
+  @Override
   public void processChangeEvent(ChangeStreamDocument<?> e) {
     Object key = e.getResumeToken().asDocument().get("_data").asString().getValue();
 

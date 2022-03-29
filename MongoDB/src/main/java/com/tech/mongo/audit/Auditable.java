@@ -9,4 +9,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface Auditable {
   String collectionName();
+
+  Class<? extends ChangeEventProcessor> changeEventProcessor() default SimpleChangeEventProcessor.class;
 }

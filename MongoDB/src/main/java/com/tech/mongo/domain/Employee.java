@@ -11,12 +11,13 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.tech.mongo.audit.Auditable;
+import com.tech.mongo.processor.EmployeeChangeEventProcessor;
 
 /**
  * Domain class for employees
  */
 @Document("employees")
-@Auditable(collectionName = "employees")
+@Auditable(collectionName = "employees", changeEventProcessor = EmployeeChangeEventProcessor.class)
 public class Employee {
 
   @Id
